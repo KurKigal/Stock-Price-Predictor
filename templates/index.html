@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .results-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .graph-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Price Predictor</h1>
+    
+    <div class="container">
+        <div class="form-container">
+            <h2>Enter Yahoo Finance Stock URL</h2>
+            <form method="POST">
+                <label for="url">Enter Yahoo Finance URL (e.g., https://finance.yahoo.com/quote/AAPL):</label>
+                <input type="text" id="url" name="url" required placeholder="https://finance.yahoo.com/quote/AAPL">
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+        
+        {% if error_message %}
+        <div class="error">
+            <p>Error: {{ error_message }}</p>
+        </div>
+        {% endif %}
+        
+        {% if prediction %}
+        <div class="results-container">
+            <h2>Price Predictions for {{ prediction.symbol }}</h2>
+            <table>
+                <tr>
+                    <th>Timeframe</th>
+                    <th>Predicted Close Price</th>
+                    <th>Change from Current</th>
+                    <th>Percent Change</th>
+                </tr>
+                <tr>
+                    <td>Current Price</td>
+                    <td>${{ prediction.current }}</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>Next Day</td>
+                    <td>${{ prediction.next_day }}</td>
+                    <td>${{ (prediction.next_day - prediction.current)|round(2) }}</td>
+                    <td>{{ ((prediction.next_day - prediction.current) / prediction.current * 100)|round(2) }}%</td>
+                </tr>
+                <tr>
+                    <td>Next Week</td>
+                    <td>${{ prediction.next_week }}</td>
+                    <td>${{ (prediction.next_week - prediction.current)|round(2) }}</td>
+                    <td>{{ ((prediction.next_week - prediction.current) / prediction.current * 100)|round(2) }}%</td>
+                </tr>
+                <tr>
+                    <td>Next Month</td>
+                    <td>${{ prediction.next_month }}</td>
+                    <td>${{ (prediction.next_month - prediction.current)|round(2) }}</td>
+                    <td>{{ ((prediction.next_month - prediction.current) / prediction.current * 100)|round(2) }}%</td>
+                </tr>
+            </table>
+            <p><em>Note: These predictions are based on linear regression of historical data and should not be used as the sole basis for investment decisions.</em></p>
+        </div>
+        
+        {% if graph_url %}
+        <div class="graph-container">
+            <h2>Price Trend Visualization</h2>
+            <img src="{{ graph_url }}" alt="Stock Price Prediction Graph">
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
