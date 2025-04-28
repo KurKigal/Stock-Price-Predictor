@@ -3,3 +3,4 @@ requests
 lxml
 pandas
 scikit-learn
+matplotlib
